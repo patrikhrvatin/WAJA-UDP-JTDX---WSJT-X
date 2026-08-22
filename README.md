@@ -118,13 +118,13 @@ Open your browser and navigate to:
 
 ### 6. Network Port Reference
 
-## 8000 – Flask Web Interface (HTTP) – Connect here to view index.html
+8000 – Flask Web Interface (HTTP) – Connect here to view index.html
 
 8001 – WebSocket server for low-latency communication with WSJT-X
 
 2333 / 2342 – Inbound UDP listening ports for WSJT-X / JTDX decodes
 
-## 2237 – Outbound UDP Relay port (forwards decodes to secondary apps like GridTracker or your Main Logger - using Winlog32 for UDP logging)
+2237 – Outbound UDP Relay port (forwards decodes to secondary apps like GridTracker or your Main Logger - using Winlog32 for UDP logging)
 
 
 ### 🔗 Advanced Setup: Sharing wsjtx_log.adi Across Multiple Applications
