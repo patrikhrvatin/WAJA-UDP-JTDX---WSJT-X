@@ -48,15 +48,38 @@ MOJ_POZIVNI = "ON4IQX"   # Change to your callsign (e.g., ON4IQX)
 WANTED_DATOTEKA = "wanted_QTH.txt"
 LOTW_DATOTEKA = "lotw-user-activity.csv"
 WSJT_LOG = "wsjtx_log.adi"
-JSON_FILE_PATH = r"C:\Program Files\Mosquitto\on4iq_rx.json"  # Adjust Windows path accordingly
+JSON_FILE_PATH = r"C:\Program Files\Mosquitto\on4iq_rx.json"  # Adjust Windows path accordingly - it is created automatically!
 ```
 
 In the main application entry point (if __name__ == "__main__":), ensure the MQTT subscription topics reflect your callsign:
 ```bash
 # RX MQTT: Listening for spots where you are the receiver
-args=("on4iq_rx.json", "RX", "pskr/filter/v2/+/+/+/ON4IQX/#")
+args=("on4iqx_rx.json", "RX", "pskr/filter/v2/+/+/+/ON4IQX/#")
 
 # TX MQTT: Listening for spots where you are the transmitter
-args=("on4iq_tx.json", "TX", "pskr/filter/v2/+/+/ON4IQX/#")
+args=("on4iqx_tx.json", "TX", "pskr/filter/v2/+/+/ON4IQX/#")
  ```
+### 📝 3. Japanese Prefectures File (need_prefs.txt)
+
+To track wanted Japanese Prefectures per amateur band, create a text file named need_prefs.txt in the root directory. Modify or add target prefectures line-by-line using the format band: Prefecture1, Prefecture2, ....
+```bash
+6m: Kagoshima, Tokushima, Fukui, Gunma
+10m: Aomori, Nagano, Mie, Nara, Wakayama, Hyogo, Toyama, Ishikawa, Yamaguchi, Tokushima, Kochi, Fukuoka, Nagasaki, Oita, Miyazaki
+12m: Kyoto, Fukui, Okinawa
+15m: Mie, Wakayama, Fukui, Yamaguchi, Tottori, Tokushima, Nagasaki, Oita, Miyazaki, Hokkaido, Aichi, Yamagata
+17m: Aomori, Tokushima, Nagasaki
+20m: Yamagata, Kyoto, Nara, Wakayama, Fukui, Tokushima, Kochi, Nagasaki, Miyazaki, Okinawa
+30m: Fukui, Yamaguchi, Nagasaki, Miyazaki
+40m: Yamagata, Fukui, Kochi, Nagasaki
+80m:
+160m:
+```
+
+## 📂 4. Required Databases & Project Structure
+
+Place the following files in the root directory of your project:
+FileDescriptionlotwreport.adiADIF export of confirmed contacts from LoTWwsjtx_log.adiLocal log file from WSJT-X / JTDXwanted_QTH.txtTarget 4-digit or 6-digit Grid Locators (one per line, e.g., JO21, JN65)need_prefs.txtBand-by-band list of needed Japanese prefectureslotw-user-activity.csv / lotw.csvList of active LoTW usersja_dtb_big.csvDatabase mapping Japanese callsigns to prefecture namestemplates/index.htmlThe primary Web UI template rendered by Flask
+
+
+
 
