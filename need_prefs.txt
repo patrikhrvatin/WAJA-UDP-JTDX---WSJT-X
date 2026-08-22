@@ -1,0 +1,21 @@
+6m: Kagoshima,Tokushima, Fukui,Gunma
+10m: Aomori, Nagano, Mie, Nara, Wakayama, Hyogo, Toyama, Ishikawa, Yamaguchi, Tokushima, Kochi, Fukuoka, Nagasaki, Oita, Miyazaki
+12m: Kyoto, Fukui, Okinawa
+15m: Mie, Wakayama, Fukui, Yamaguchi, Tottori, Tokushima, Nagasaki, Oita, Miyazaki, Hokkaido, Aichi, Yamagata
+17m: Aomori, Tokushima, Nagasaki
+20m: Yamagata, Kyoto, Nara, Wakayama, Fukui, Tokushima, Kochi, Nagasaki, Miyazaki, Okinawa
+30m: Fukui, Yamaguchi, Nagasaki, Miyazaki
+40m: Yamagata, Fukui, Kochi, Nagasaki
+80m:
+160m:
+
+
+
+
+
+
+
+
+
+
+
