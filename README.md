@@ -1,6 +1,3 @@
-Samo kopirajte i zamijenite cijeli sadržaj u vašoj README.md datoteci sa sljedećim kodom:
-Markdown
-
 # FT8 / Digital Modes Real-Time Monitor & PSKReporter Relay
 
 A real-time FT8/FT4 and digital modes monitoring system built with Python, Flask, and WebSockets. The application connects directly to **WSJT-X / JTDX** (via UDP and WebSockets) and to **PSKReporter** (via MQTT streams using `mosquitto_sub.exe`), cross-references incoming decodes with your local ADIF logs and custom databases, and serves live statistics to an interactive web dashboard (`index.html`).
