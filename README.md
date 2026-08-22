@@ -37,6 +37,7 @@ Install all required Python packages using `pip`:
 
 ```bash
 pip install flask flask-socketio websockets
+ ```
 
 ⚙️ 2. Configuration (Callsign & Locator)
 
