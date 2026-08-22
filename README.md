@@ -227,7 +227,7 @@ mosquitto_sub -h mqtt.pskreporter.info -t "pskr/filter/v2/6m/+/+/+/+/+/+/+"
 
 Scripts details: RX/TX MQTT from Pskreporter /FT8 my decodes + Maps
 
-
+```
 
 <img width="1907" height="944" alt="ft8" src="https://github.com/user-attachments/assets/c5f467bd-7d5d-403e-a3d4-1ffd2af8fa26" />
 
