@@ -90,7 +90,7 @@ To track wanted Japanese Prefectures per amateur band, create a text file named 
 ft8-monitor/
 ├── templates/
 │   └── index.html
-├── main.py
+├── flask_map16.py
 ├── need_prefs.txt
 ├── wanted_QTH.txt
 ├── lotwreport.adi
@@ -149,6 +149,28 @@ Using Windows Command Prompt (CLI Method):
 Alternatively, you can create a hardlink natively via cmd (run as Administrator):
 
 mklink /H "C:\path\to\ft8-monitor\wsjtx_log.adi" "%LOCALAPPDATA%\WSJT-X\wsjtx_log.adi"
+
+---
+
+## MQTT command prompt examples:
+mosquitto_sub -h mqtt.pskreporter.info -t "pskr/filter/v2/+/+/9A5CW/+/+/+/+/+" > 9a5cw.json
+mosquitto_sub -h mqtt.pskreporter.info -t "pskr/filter/v2/6m/+/+/+/+/+/+/+"
+
+Scripts details: RX/TX MQTT from Pskreporter /FT8 my decodes + Maps
+
+<img width="1907" height="944" alt="ft8" src="https://github.com/user-attachments/assets/c5f467bd-7d5d-403e-a3d4-1ffd2af8fa26" />
+<img width="1899" height="935" alt="rx" src="https://github.com/user-attachments/assets/94c25baf-36dc-49b6-8be7-2f43b3edef90" />
+
+<img width="1891" height="959" alt="tx" src="https://github.com/user-attachments/assets/a1f3e2c9-bd6e-45a3-b9ff-e32d98920680" />
+
+<img width="942" height="628" alt="yamaguchi" src="https://github.com/user-attachments/assets/815300bd-1a2c-40b2-b9c9-21fe3a6ba652" />
+<img width="1875" height="937" alt="new_prefekture_alert" src="https://github.com/user-attachments/assets/ce1eae2f-6773-43b2-b337-e63888b799ed" />
+
+
+
+
+
+
 
 
    
