@@ -122,22 +122,19 @@ Access the Web Interface:
 Open your browser and go to:
 Plaintext
 
-    [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+[http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
 ---
-###
+
 ## 📡 6. Network Port Reference
 
-    8000 – Flask Web Interface (HTTP) – Connect here to view index.html
-
-    8001 – WebSocket server for low-latency communication with WSJT-X
-
-    2333 / 2342 – Inbound UDP listening ports for WSJT-X / JTDX decodes
-
-    2237 – Outbound UDP Relay port (forwards decodes to secondary apps like GridTracker)
-
+* **8000** – Flask Web Interface (HTTP) – Connect here to view `index.html`
+* **8001** – WebSocket server for low-latency communication with WSJT-X
+* **2333 / 2342** – Inbound UDP listening ports for WSJT-X / JTDX decodes
+* **2237** – Outbound UDP Relay port (forwards decodes to secondary apps like GridTracker)
 
 ---
-###
+
 ## 🔗 Advanced Setup: Sharing `wsjtx_log.adi` Across Multiple Applications
 
 If you are running both **WSJT-X** and **JTDX** simultaneously or want this script to instantly read logs from another directory without duplicating files, you can create an **NTFS Hardlink**. 
@@ -150,9 +147,10 @@ This allows multiple programs to read and write to the exact same log file in re
 2. Navigate to your primary log directory (e.g., `%LOCALAPPDATA%\WSJT-X`).
 3. Right-click your original `wsjtx_log.adi` file and select **Pick Link Source**.
 4. Open your **ft8-monitor** project directory (or JTDX directory).
-5. Right-click on an empty space, select **Drop As...** $\rightarrow$ **Hardlink**.
+5. Right-click on an empty space, select **Drop As...** -> **Hardlink**.
 
 ### Using Windows Command Prompt (CLI Method):
+
 Alternatively, you can create a hardlink natively via `cmd` (run as Administrator):
 
 ```cmd
