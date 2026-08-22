@@ -136,7 +136,7 @@ Plaintext
 
 
 ---
-
+###
 ## 🔗 Advanced Setup: Sharing `wsjtx_log.adi` Across Multiple Applications
 
 If you are running both **WSJT-X** and **JTDX** simultaneously or want this script to instantly read logs from another directory without duplicating files, you can create an **NTFS Hardlink**. 
