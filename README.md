@@ -1,0 +1,2 @@
+# WAJA-UDP-JTDX---WSJT-X
+WAJA UDP JTDX - WSJT-X and QSO mapping 
