@@ -32,18 +32,16 @@ A real-time FT8/FT4 and digital modes monitoring system built with Python, Flask
 
 ### Python Dependencies (For `requirements.txt`)
 
+
 Install all required Python packages using `pip`:
 
 ```bash
 pip install flask flask-socketio websockets
 
----
-
 ⚙️ 2. Configuration (Callsign & Locator)
 
 To configure the application for your station, open main.py and modify the global variables at the top of the file with your callsign and QTH locator:
 
-```bash
 # --- 2. CONFIGURATION AND DEFINITIONS ---
 MOJ_LOKATOR = "JO20AR"  # Change to your QTH locator (e.g., JO20AR)
 MOJ_POZIVNI = "ON4IQ"   # Change to your callsign (e.g., ON4IQ)
