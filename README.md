@@ -150,6 +150,77 @@ Alternatively, you can create a hardlink natively via cmd (run as Administrator)
 
 mklink /H "C:\path\to\ft8-monitor\wsjtx_log.adi" "%LOCALAPPDATA%\WSJT-X\wsjtx_log.adi"
 
+# 🌐 Web Dashboard Frontend (`index.html`)
+
+The frontend component of the FT8 Real-Time Monitor is a single-page interactive web application powered by **HTML5**, **Bootstrap 5**, **Leaflet.js**, and **Socket.IO**. It presents real-time digital mode spots, live maps, geodesic propagation paths, and instant alert notifications for targeted awards.
+
+---
+
+## ✨ Web Interface Highlights
+
+- **Dark Theme Interface:** Optimized for high-contrast viewing with a low-light UI suited for amateur radio operation environments.
+- **Interactive Leaflet Map:**
+  - Dynamic map rendering using OpenStreetMap tiles.
+  - Automatic station location pinpointing based on Maidenhead Grid Locators (supports 4-digit and 6-digit precision).
+  - Great-circle geodesic line drawing (`Leaflet.Geodesic`) showing true propagation paths between your home station and remote spots.
+- **Audio & Visual Alerts:**
+  - Pop-up alert banners with auto-dismiss timers for high-priority targets (e.g., needed Japanese Prefectures).
+  - Integrated HTML5 Audio Synthesizer (`AudioContext`) triggering real-time sound notifications.
+- **Dynamic Mode Switching:**
+  - **⚡ FT8 Monitor:** Real-time stream of incoming decodes from WSJT-X / JTDX. Highlights missing Japanese prefectures with action buttons linking to QRZ.com profiles.
+  - **📥 RX (PSK) & 📤 TX (PSK):** Displays spots reported directly to/from PSKReporter.
+- **Filtering & Controls:**
+  - Multi-band selector (`160m` through `6m`) for quick frequency filtering.
+  - One-click canvas reset (`Clear` button) to clean markers and history tables.
+
+---
+
+## 💻 Tech Stack & Dependencies (CDN)
+
+The HTML template imports all required frontend libraries directly via public CDNs:
+
+| Library | Version | Purpose |
+| :--- | :--- | :--- |
+| **Bootstrap** | 5.3.0 | Structural layout, responsive grid, and dark theme components |
+| **Leaflet.js** | 1.9.4 | Interactive map rendering and marker layer management |
+| **Leaflet.Geodesic** | 2.7.2 | Great-circle propagation line drawing |
+| **Socket.IO Client** | 4.7.2 | Real-time WebSocket event handling with the Flask backend |
+
+---
+
+## 🧩 Template Architecture
+
+The file is structured to be rendered seamlessly by Flask's Jinja2 template engine:
+
+- **Jinja2 Variables:**
+  - `{{ moj_pozivni }}` – Injected station callsign (e.g., `ON4IQ`).
+  - `{{ moj_lokator }}` – Injected QTH Maidenhead Grid Locator (e.g., `JO20AR`).
+- **Real-Time Data Flow:**
+  - Listens for `novi_spot` (PSKReporter MQTT streams).
+  - Listens for `novi_ft8_decode` (WSJT-X UDP streams).
+  - Auto-cleans expired map markers and old entries (>5 minutes) to conserve memory.
+
+---
+
+## 📄 License & Copyright
+
+This web dashboard template is released under the **MIT License**.
+
+This UI layout and frontend code are **free to use, modify, share, and redistribute** for both personal and non-commercial amateur radio operations.
+
+```text
+Copyright (c) 2026
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
 ### 📄 License & Copyright
 
 This project is released under the MIT License.
