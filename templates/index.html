@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ moj_pozivni }} - PSK Reporter & FT8 Monitor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.geodesic@2.7.2/dist/leaflet.geodesic.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        html, body { height: 100%; margin: 0; overflow: hidden; background-color: #121212; color: #E0E0E0; font-family: 'Consolas', monospace; }
+        .app-container { display: flex; flex-direction: column; height: 100vh; padding: 10px; box-sizing: border-box; gap: 10px; }
+        .top-bar { background: #1f1f1f; padding: 10px; border-radius: 8px; flex-shrink: 0; }
+        .controls-bar { flex-shrink: 0; }
+        .main-content { flex: 1; min-height: 0; display: flex; gap: 10px; }
+        .col-panel { height: 100%; display: flex; flex-direction: column; }
+        .table-container { flex: 1; overflow-y: auto; min-height: 0; background-color: #1f1f1f; border-radius: 8px; }
+        
+        .navbar, .card { background-color: #1f1f1f; border: none; }
+        .table { color: #E0E0E0; font-size: 0.85rem; margin-bottom: 0; }
+        .table-dark { background-color: #121212; }
+        .badge-rx { background-color: #003322; color: #00E676; cursor: pointer; }
+        .badge-tx { background-color: #1f1f1f; color: #888888; cursor: pointer; }
+        .badge-ft8 { background-color: #002233; color: #00bcd4; cursor: pointer; }
+        .badge-rx.active, .badge-tx.active, .badge-ft8.active { border: 1px solid #fff; }
+        #map { flex: 1; width: 100%; border-radius: 8px; min-height: 250px; }
+        .btn-call { background-color: #ff9800; color: #000; border: none; padding: 4px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
+        /* Bootstrap Table Overrides za nove prefekture */
+        #ft8-table-body tr.needed-pref-row,
+        #ft8-table-body tr.needed-pref-row > td,
+        .table-striped > tbody > tr.needed-pref-row > *,
+        .table-hover > tbody > tr.needed-pref-row:hover > * {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+        }
+
+        #pref-alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div id="pref-alert-container"></div>
+
+        <!-- Top Header -->
+        <div class="top-bar d-flex justify-content-between align-items-center">
+            <div style="max-width: 80%;">
+                <h5 class="m-0 text-success">{{ moj_pozivni }} - PSK Reporter & FT8 Monitor</h5>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                    <small id="status-bar" class="text-info text-nowrap">QTH: <span id="lbl-qth">{{ moj_lokator }}</span> |</small>
+                    <marquee id="pref-ticker" behavior="scroll" direction="left" scrollamount="4" style="color: #ffeb3b; font-weight: bold; font-size: 0.85rem;">
+                        Čekam nove prefekture...
+                    </marquee>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-warning" onclick="ocistiZaslon()">🗑 Clear</button>
+            </div>
+        </div>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <span id="tab-rx" class="badge badge-rx p-2" onclick="setMod('RX')">📥 RX (PSK)</span>
+                <span id="tab-tx" class="badge badge-tx p-2 ms-2" onclick="setMod('TX')">📤 TX (PSK)</span>
+                <span id="tab-ft8" class="badge badge-ft8 p-2 ms-2 d-inline-flex align-items-center active" onclick="setMod('FT8')">
+                    <span>⚡ FT8 Monitor</span>
+                    <span id="ft8-tab-ticker" class="ms-1" style="color: #ffeb3b; font-size: 0.8rem;"></span>
+                    <marquee id="ft8-tab-marquee" behavior="scroll" direction="left" scrollamount="3" style="width: 120px; color: #ffeb3b;" class="ms-2">
+                        Čekam...
+                    </marquee>
+                </span>
+            </div>
+            <div id="band-filter-container">
+                <select id="band-filter" class="form-select form-select-sm d-inline-block w-auto bg-dark text-light border-secondary" onchange="osvjeziSve()">
+                    <option value="All">All Bands</option>
+                    <option value="160m">160m</option><option value="80m">80m</option><option value="40m">40m</option>
+                    <option value="20m">20m</option><option value="17m">17m</option><option value="15m">15m</option>
+                    <option value="12m">12m</option><option value="10m">10m</option><option value="6m">6m</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Main Content (Map + Tables) -->
+        <div class="main-content">
+            <div class="col-panel" style="flex: 1;">
+                <div id="map"></div>
+            </div>
+            <div class="col-panel" style="flex: 1;">
+                <div class="table-container">
+                    <table id="table-psk" class="table table-dark table-striped table-hover align-middle" style="display: none;">
+                        <thead><tr><th>Time</th><th>Station</th><th>Loc</th><th>Band</th><th>Mode</th></tr></thead>
+                        <tbody id="spot-table"></tbody>
+                    </table>
+                    <table id="table-ft8" class="table table-dark table-striped table-hover align-middle">
+                        <thead><tr><th>UTC</th><th>Band</th><th>Callsign</th><th>Grid</th><th>Pref</th><th>Action</th></tr></thead>
+                        <tbody id="ft8-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const socket = io();
+        let trenutniMod = 'FT8';
+        let globalData = { rx: [], tx: [], ft8: [] };
+        let ujednePrefekture = [];
+
+        // Inicijalizacija karte
+        let map = L.map('map').setView([45.239, 13.945], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OSM' }).addTo(map);
+        let markersLayer = L.layerGroup().addTo(map);
+
+        let mojLocInit = document.getElementById('lbl-qth').innerText;
+        
+        function getMojCoords() {
+            let loc = document.getElementById('lbl-qth').innerText;
+            return locatorToLatLon(loc);
+        }
+
+        function postaviMojaStanicu() {
+            let coords = getMojCoords();
+            L.marker(coords).addTo(markersLayer).bindPopup("Moja stanica: " + document.getElementById('lbl-qth').innerText);
+        }
+
+        postaviMojaStanicu();
+
+        function osvjeziTicker() {
+            const tickerEl = document.getElementById('pref-ticker');
+            const tabTickerEl = document.getElementById('ft8-tab-ticker');
+            const tabMarquee = document.getElementById('ft8-tab-marquee');
+
+            if (ujednePrefekture.length === 0) {
+                if (tickerEl) tickerEl.innerHTML = 'Čekam nove prefekture...';
+                if (tabTickerEl) tabTickerEl.innerHTML = '';
+                if (tabMarquee) tabMarquee.innerHTML = 'Čekam...';
+            } else {
+                if (tickerEl) {
+                    tickerEl.innerHTML = '🚨 ' + ujednePrefekture.map(p => `<strong>${p.call}</strong> (${p.pref} - ${p.band})`).join(' &nbsp; | &nbsp; 🚨 ');
+                }
+                if (tabTickerEl) {
+                    const zadnja = ujednePrefekture[0];
+                    tabTickerEl.innerHTML = `[🚨 ${zadnja.call} - ${zadnja.pref}]`;
+                }
+                if (tabMarquee) {
+                    tabMarquee.innerHTML = ujednePrefekture.map(p => `${p.call} (${p.pref})`).join(' • ');
+                }
+            }
+        }
+
+        function svirajAlertZvuk() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) { console.log(e); }
+        }
+
+        window.prikaziPrefAlert = function(call, pref, band) {
+            let container = document.getElementById('pref-alert-container');
+            if (!container) return;
+            
+            const alertBox = document.createElement('div');
+            alertBox.className = 'alert alert-danger shadow-lg';
+            alertBox.style.cssText = 'margin: 0; min-width: 280px; background-color: #dc3545; color: white; border: 2px solid #fff; border-radius: 8px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);';
+            
+            alertBox.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        🚨 <strong>NOVA PREFEKTURA!</strong><br>
+                        <span style="font-size: 1.1em; color: #ffeb3b;"><strong>${call}</strong></span> - Pref: <u>${pref}</u> (${band})
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:white; font-size: 16px; cursor:pointer; margin-left:10px;">✖</button>
+                </div>
+            `;
+
+            container.prepend(alertBox);
+            svirajAlertZvuk();
+
+            setTimeout(() => {
+                if (alertBox.parentNode) alertBox.remove();
+            }, 8000);
+        };
+
+        // Socket slušatelji
+        socket.on('novi_spot', function(spot) {
+            if (spot.mod === 'RX') {
+                globalData.rx.unshift(spot);
+                if (globalData.rx.length > 200) globalData.rx.pop();
+            } else if (spot.mod === 'TX') {
+                globalData.tx.unshift(spot);
+                if (globalData.tx.length > 200) globalData.tx.pop();
+            }
+
+            if (trenutniMod === spot.mod) {
+                osvjeziSve();
+            }
+        });
+
+        socket.on('novi_ft8_decode', function(d) {
+            d.receivedAt = Date.now();
+            const prefPrikaz = d.pref_name || d.pref_num || d.prefecture || '';
+            const statusText = String(d.pref_status || d.grid_status || d.status || '').toLowerCase();
+            
+            const jeNovaPrefektura = Boolean(
+                d.is_new === true || 
+                d.needed === true || 
+                d.is_needed === true || 
+                statusText.includes('new') || 
+                statusText.includes('needed') || 
+                statusText.includes('traženo')
+            );
+
+            d.is_needed = jeNovaPrefektura;
+            globalData.ft8.unshift(d);
+
+            if (jeNovaPrefektura) {
+                let call = d.call || d.callsign || 'N/A';
+                if (!ujednePrefekture.some(p => p.call === call && p.pref === prefPrikaz)) {
+                    ujednePrefekture.unshift({ call: call, pref: prefPrikaz || 'Pref', band: d.band || '' });
+                    osvjeziTicker();
+                    prikaziPrefAlert(call, prefPrikaz || 'Prefektura', d.band || '');
+                }
+            }
+
+            if (globalData.ft8.length > 200) globalData.ft8.pop();
+
+            if (trenutniMod === 'FT8') {
+                dodajFt8UTablicu(d);
+                nacrtajPojedinacniSpotNaKarti(d);
+            }
+        });
+
+        function dodajFt8UTablicu(d) {
+    const tbody = document.getElementById('ft8-table-body');
+    if (!tbody) return;
+
+    let call = d.call || d.callsign || '—';
+    let pref = d.pref_name || d.pref_num || d.prefecture || '';
+    const isNeeded = d.is_needed === true;
+
+    let rowClass = isNeeded ? 'needed-pref-row' : '';
+    let prefBadge = isNeeded 
+        ? `<span class="badge bg-warning text-dark">${pref}</span>` 
+        : `<span class="badge bg-secondary text-light">${pref || '—'}</span>`;
+
+    // Klikom na ⚡ otvara se QRZ.com profil za uvaćeni callsign
+    let actionBtn = (call !== '—') 
+        ? `<button class="btn-call" onclick="window.open('https://www.qrz.com/db/${call}', '_blank')" title="Otvori ${call} na QRZ.com">⚡</button>`
+        : `<button class="btn-call" disabled>⚡</button>`;
+
+    let noviRed = `<tr class="${rowClass}">
+        <td>${d.time || '—'}</td>
+        <td>${d.band || '—'}</td>
+        <td><strong>${call}</strong></td>
+        <td>${d.grid || ''}</td>
+        <td>${prefBadge}</td>
+        <td>${actionBtn}</td>
+    </tr>`;
+
+    tbody.insertAdjacentHTML('afterbegin', noviRed);
+    if (tbody.rows.length > 100) tbody.deleteRow(100);
+}
+
+// Izračun koordinata s punom podrškom za 4-znakovne i 6-znakovne lokatore (JN65XF)
+function locatorToLatLon(locator) {
+    if (!locator || locator.length < 4) return [45.24, 13.94]; // Fallback Pazin
+
+    locator = locator.toUpperCase().trim();
+
+    let lon = (locator.charCodeAt(0) - 65) * 20 - 180 + (locator.charCodeAt(2) - 48) * 2;
+    let lat = (locator.charCodeAt(1) - 65) * 10 - 90 + (locator.charCodeAt(3) - 48) * 1;
+
+    // Precizni proračun za 6-mjesne lokatore (npr. XF u JN65XF)
+    if (locator.length >= 6) {
+        lon += (locator.charCodeAt(4) - 65) * (2 / 24) + (1 / 24);
+        lat += (locator.charCodeAt(5) - 65) * (1 / 24) + (0.5 / 24);
+    } else {
+        // Za 4-mjesne lokatore uzima se sredina polja
+        lon += 1;
+        lat += 0.5;
+    }
+
+    return [lat, lon];
+}
+
+function nacrtajPojedinacniSpotNaKarti(d) {
+    let grid = d.grid || d.locator;
+    if (!grid || grid.length < 4) return;
+
+    let mojCoords = getMojCoords();
+    let dest = (d.lat && d.lon && d.lat !== 0) ? [d.lat, d.lon] : locatorToLatLon(grid);
+
+    let callsign = d.call || d.callsign || '—';
+    let lotwText = d.is_lotw || d.lotw ? "Yes 🟢" : "No";
+    let inLogText = d.in_log ? "Yes 🟢" : "No";
+    let prefTekst = d.pref_name || d.pref_num || "—";
+
+    let markerColor = d.is_needed ? '#FF5722' : '#00BCD4';
+    let lineColor = d.is_needed ? '#FF9800' : '#0288D1';
+
+    let popupContent = `
+        <b>Call: ${callsign}</b><br>
+        Loc: ${grid}<br>
+        Time: ${d.time || '—'}<br>
+        Band: ${d.band || '—'}<br>
+        Mode: ${d.mode || 'FT8'}<br>
+        Report: ${d.snr || d.report || '—'}<br>
+        Dist: ${d.distance || '—'}<br>
+        LoTW: ${lotwText}<br>
+        In Log: ${inLogText}<br>
+        Prefecture: <b>${prefTekst}</b>
+    `;
+
+    let marker = L.circleMarker(dest, {
+        radius: 5, color: markerColor, fillColor: markerColor, fillOpacity: 0.8
+    }).addTo(markersLayer).bindPopup(popupContent);
+
+    let geodesicLine = null;
+    if (typeof L.Geodesic !== 'undefined') {
+        geodesicLine = new L.Geodesic([[mojCoords[0], mojCoords[1]], [dest[0], dest[1]]], {
+            color: lineColor, weight: 1.5, opacity: 0.6, steps: 15
+        });
+        markersLayer.addLayer(geodesicLine);
+    }
+
+    setTimeout(() => {
+        if (markersLayer.hasLayer(marker)) markersLayer.removeLayer(marker);
+        if (geodesicLine && markersLayer.hasLayer(geodesicLine)) markersLayer.removeLayer(geodesicLine);
+    }, 300000);
+}
+        // KONTROLA TABOVA - Čista preklopna logika
+        window.setMod = function(mod) {
+            trenutniMod = mod;
+
+            // Ažuriranje izgleda gumba
+            document.getElementById('tab-rx').classList.toggle('active', mod === 'RX');
+            document.getElementById('tab-tx').classList.toggle('active', mod === 'TX');
+            document.getElementById('tab-ft8').classList.toggle('active', mod === 'FT8');
+
+            // Prikaz/Skrivanje tablica
+            const tablePsk = document.getElementById('table-psk');
+            const tableFt8 = document.getElementById('table-ft8');
+
+            if (mod === 'FT8') {
+                tablePsk.style.display = 'none';
+                tableFt8.style.display = 'table';
+            } else {
+                tablePsk.style.display = 'table';
+                tableFt8.style.display = 'none';
+            }
+
+            // Osvježi prikaz za odabrani mod
+            osvjeziSve();
+        };
+
+        window.osvjeziSve = function() {
+            markersLayer.clearLayers();
+            postaviMojaStanicu();
+
+            if (trenutniMod === 'FT8') {
+                const tbody = document.getElementById('ft8-table-body');
+                tbody.innerHTML = '';
+                
+                const fiveMinAgo = Date.now() - 300000;
+                globalData.ft8 = globalData.ft8.filter(d => (d.receivedAt || Date.now()) > fiveMinAgo);
+
+                // Ponovno iscrtaj sve aktivne FT8 dekode u tablicu i na kartu
+                [...globalData.ft8].reverse().forEach(d => {
+                    dodajFt8UTablicu(d);
+                    nacrtajPojedinacniSpotNaKarti(d);
+                });
+            } else {
+                const tbody = document.getElementById('spot-table');
+                tbody.innerHTML = '';
+                
+                let bandFilterEl = document.getElementById('band-filter');
+                const odabraniBand = bandFilterEl ? bandFilterEl.value : 'All';
+                const lista = trenutniMod === 'RX' ? globalData.rx : globalData.tx;
+
+                let mojCoords = getMojCoords();
+
+                let valjaniSpotovi = lista.filter(spot => {
+                    if (!spot.locator || spot.locator === 'N/A' || spot.locator.length < 4) return false;
+                    if (odabraniBand !== 'All' && String(spot.band).toLowerCase() !== odabraniBand.toLowerCase()) return false;
+                    return true;
+                });
+
+                valjaniSpotovi.slice(0, 50).forEach(spot => {
+                    let destCoords = (spot.lat && spot.lon && spot.lat !== 0) ? [spot.lat, spot.lon] : locatorToLatLon(spot.locator);
+                    
+                    tbody.innerHTML += `<tr>
+                        <td>${spot.time || ''}</td>
+                        <td><b>${spot.callsign || ''}</b></td>
+                        <td>${spot.locator || ''}</td>
+                        <td>${spot.band || ''}</td>
+                        <td>${spot.mode || ''}</td>
+                    </tr>`;
+
+                    let popupContent = `
+                        <b>Call: ${spot.callsign}</b><br>
+                        Loc: ${spot.locator}<br>
+                        Time: ${spot.time}<br>
+                        Band: ${spot.band}<br>
+                        Mode: ${spot.mode}<br>
+                        Report: ${spot.report || '—'}<br>
+                        Dist: ${spot.distance || '—'}
+                    `;
+
+                    L.circleMarker(destCoords, {
+                        radius: 5, color: '#00E676', fillColor: '#00E676', fillOpacity: 0.8
+                    }).addTo(markersLayer).bindPopup(popupContent);
+
+                    if (typeof L.Geodesic !== 'undefined') {
+                        let geodesicLine = new L.Geodesic([[mojCoords[0], mojCoords[1]], [destCoords[0], destCoords[1]]], {
+                            color: '#00B0FF', weight: 1.5, opacity: 0.5, steps: 20
+                        });
+                        markersLayer.addLayer(geodesicLine);
+                    }
+                });
+            }
+
+            setTimeout(() => { map.invalidateSize(); }, 150);
+        };
+        
+        window.ocistiZaslon = function() {
+            globalData = { rx: [], tx: [], ft8: [] };
+            ujednePrefekture = [];
+            osvjeziTicker();
+            osvjeziSve();
+        };
+    });
+</script>
+</body>
+</html>
