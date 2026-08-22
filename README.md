@@ -158,13 +158,22 @@ mosquitto_sub -h mqtt.pskreporter.info -t "pskr/filter/v2/6m/+/+/+/+/+/+/+"
 
 Scripts details: RX/TX MQTT from Pskreporter /FT8 my decodes + Maps
 
+
+
 <img width="1907" height="944" alt="ft8" src="https://github.com/user-attachments/assets/c5f467bd-7d5d-403e-a3d4-1ffd2af8fa26" />
+
 <img width="1899" height="935" alt="rx" src="https://github.com/user-attachments/assets/94c25baf-36dc-49b6-8be7-2f43b3edef90" />
 
 <img width="1891" height="959" alt="tx" src="https://github.com/user-attachments/assets/a1f3e2c9-bd6e-45a3-b9ff-e32d98920680" />
 
 <img width="942" height="628" alt="yamaguchi" src="https://github.com/user-attachments/assets/815300bd-1a2c-40b2-b9c9-21fe3a6ba652" />
+
 <img width="1875" height="937" alt="new_prefekture_alert" src="https://github.com/user-attachments/assets/ce1eae2f-6773-43b2-b337-e63888b799ed" />
+
+<img width="936" height="642" alt="prefs" src="https://github.com/user-attachments/assets/2eef359b-2ecf-4287-8653-f72e73c6e5d1" />
+
+
+
 
 
 
