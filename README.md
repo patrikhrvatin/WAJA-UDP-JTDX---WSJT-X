@@ -38,7 +38,7 @@ Install all required Python packages using `pip`:
 ```bash
 pip install flask flask-socketio websockets
  ```
-⚙️ 2. Configuration (Callsign & Locator)
+## ⚙️ 2. Configuration (Callsign & Locator)
 
 To configure the application for your station, open main.py and modify the global variables at the top of the file with your callsign and QTH locator:
 ```bash
