@@ -48,7 +48,7 @@ MOJ_POZIVNI = "ON4IQX"   # Change to your callsign (e.g., ON4IQX)
 WANTED_DATOTEKA = "wanted_QTH.txt"
 LOTW_DATOTEKA = "lotw-user-activity.csv"
 WSJT_LOG = "wsjtx_log.adi"
-JSON_FILE_PATH = r"C:\Program Files\Mosquitto\on4iq_rx.json"  # Adjust Windows path accordingly - it is created automatically!
+JSON_FILE_PATH = r"C:\Program Files\Mosquitto\on4iqx_rx.json"  # Adjust Windows path accordingly - it is created automatically!
 ```
 
 In the main application entry point (if __name__ == "__main__":), ensure the MQTT subscription topics reflect your callsign:
@@ -193,7 +193,7 @@ The HTML template imports all required frontend libraries directly via public CD
 The file is structured to be rendered seamlessly by Flask's Jinja2 template engine:
 
 - **Jinja2 Variables:**
-  - `{{ moj_pozivni }}` – Injected station callsign (e.g., `ON4IQ`).
+  - `{{ moj_pozivni }}` – Injected station callsign (e.g., `ON4IQX`).
   - `{{ moj_lokator }}` – Injected QTH Maidenhead Grid Locator (e.g., `JO20AR`).
 - **Real-Time Data Flow:**
   - Listens for `novi_spot` (PSKReporter MQTT streams).
