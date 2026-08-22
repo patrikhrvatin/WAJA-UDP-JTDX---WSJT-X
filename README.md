@@ -123,8 +123,9 @@ Open your browser and go to:
 Plaintext
 
     [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-
-📡 6. Network Port Reference
+---
+###
+## 📡 6. Network Port Reference
 
     8000 – Flask Web Interface (HTTP) – Connect here to view index.html
 
