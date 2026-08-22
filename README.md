@@ -132,7 +132,7 @@ Open your browser and navigate to:
 If you are running both WSJT-X and JTDX simultaneously or want this script to instantly read logs from another directory without duplicating files, you can create an NTFS Hardlink.
 
 This allows multiple programs to read and write to the exact same log file in real time.
-Using Link Shell Extension (GUI Method - Windows):
+Using Link Shell Extension https://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html (GUI Method - Windows):
 
     Download and install Link Shell Extension.
 
@@ -150,7 +150,24 @@ Alternatively, you can create a hardlink natively via cmd (run as Administrator)
 
 mklink /H "C:\path\to\ft8-monitor\wsjtx_log.adi" "%LOCALAPPDATA%\WSJT-X\wsjtx_log.adi"
 
+### 📄 License & Copyright
+
+This project is released under the MIT License.
+
+This script and software are free to use, modify, share, and redistribute for both personal and non-commercial amateur radio operations.
 ---
+Copyright (c) 2026
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
 
 ## MQTT command prompt examples:
 mosquitto_sub -h mqtt.pskreporter.info -t "pskr/filter/v2/+/+/9A5CW/+/+/+/+/+" > 9a5cw.json
