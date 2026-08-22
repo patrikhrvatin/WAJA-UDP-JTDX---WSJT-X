@@ -86,6 +86,7 @@ To track wanted Japanese Prefectures per amateur band, create a text file named 
                       templates/index.html The primary Web UI template rendered by Flask
 
 ### Project Directory Layout:
+```bash
 ft8-monitor/
 ├── templates/
 │   └── index.html
@@ -97,6 +98,8 @@ ft8-monitor/
 ├── lotw.csv
 ├── ja_dtb_big.csv
 └── requirements.txt
+```
+
 
 ### 🚀 5. Installation & Usage
 
