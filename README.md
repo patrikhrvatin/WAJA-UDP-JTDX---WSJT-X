@@ -238,7 +238,7 @@ furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
+```
 
 ## MQTT command prompt examples:
 mosquitto_sub -h mqtt.pskreporter.info -t "pskr/filter/v2/+/+/9A5CW/+/+/+/+/+" > 9a5cw.json
