@@ -36,3 +36,20 @@ Install all required Python packages using `pip`:
 
 ```bash
 pip install flask flask-socketio websockets
+
+---
+
+⚙️ 2. Configuration (Callsign & Locator)
+
+To configure the application for your station, open main.py and modify the global variables at the top of the file with your callsign and QTH locator:
+
+```bash
+# --- 2. CONFIGURATION AND DEFINITIONS ---
+MOJ_LOKATOR = "JO20AR"  # Change to your QTH locator (e.g., JO20AR)
+MOJ_POZIVNI = "ON4IQ"   # Change to your callsign (e.g., ON4IQ)
+WANTED_DATOTEKA = "wanted_QTH.txt"
+LOTW_DATOTEKA = "lotw-user-activity.csv"
+WSJT_LOG = "wsjtx_log.adi"
+JSON_FILE_PATH = r"C:\Program Files\Mosquitto\on4iq_rx.json"  # Adjust Windows path accordingly
+
+
