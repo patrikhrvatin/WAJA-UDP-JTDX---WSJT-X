@@ -242,6 +242,7 @@ copies or substantial portions of the Software.
 
 ## MQTT command prompt examples:
 mosquitto_sub -h mqtt.pskreporter.info -t "pskr/filter/v2/+/+/9A5CW/+/+/+/+/+" > 9a5cw.json
+
 mosquitto_sub -h mqtt.pskreporter.info -t "pskr/filter/v2/6m/+/+/+/+/+/+/+"
 
 Scripts details: RX/TX MQTT from Pskreporter /FT8 my decodes + Maps
