@@ -205,15 +205,7 @@ The file is structured to be rendered seamlessly by Flask's Jinja2 template engi
 ## 📄 License & Copyright
 
 This web dashboard template is released under the **MIT License**.
-
-This UI layout and frontend code are **free to use, modify, share, and redistribute** for both personal and non-commercial amateur radio operations.
-
-```text
-### 📄 License & Copyright
-
-This project is released under the MIT License.
-
-This script and software are free to use, modify, share, and redistribute for both personal and non-commercial amateur radio operations.
+This script, UI layout and frontend code software are free to use, modify, share, and redistribute for both personal and non-commercial amateur radio operations.
 ---
 Copyright (c) 2026
 
