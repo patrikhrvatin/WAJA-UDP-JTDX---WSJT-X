@@ -75,10 +75,15 @@ To track wanted Japanese Prefectures per amateur band, create a text file named 
 160m:
 ```
 
-## 📂 4. Required Databases & Project Structure
-
-Place the following files in the root directory of your project:
-FileDescriptionlotwreport.adiADIF export of confirmed contacts from LoTWwsjtx_log.adiLocal log file from WSJT-X / JTDXwanted_QTH.txtTarget 4-digit or 6-digit Grid Locators (one per line, e.g., JO21, JN65)need_prefs.txtBand-by-band list of needed Japanese prefectureslotw-user-activity.csv / lotw.csvList of active LoTW usersja_dtb_big.csvDatabase mapping Japanese callsigns to prefecture namestemplates/index.htmlThe primary Web UI template rendered by Flask
+### 📂 4. Required Databases & Project StructurePlace the following files in the root directory of your project:
+## File Description:
+                  lotwreport.adi ADIF export of confirmed contacts from LoTW 
+                  wsjtx_log.adiLocal log file from WSJT-X / JTDX
+                  wanted_QTH.txt Target 4-digit or 6-digit Grid Locators (one per line, e.g., JO21, JN65)
+                  need_prefs.txt Band-by-band list of needed Japanese prefectures 
+                  lotw-user-activity.csv / lotw.csv List of active LoTW users
+                  ja_dtb_big.csvDatabase mapping Japanese callsigns to prefecture names 
+                  templates/index.html The primary Web UI template rendered by Flask
 
 
 
