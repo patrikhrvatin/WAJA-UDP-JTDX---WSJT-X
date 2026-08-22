@@ -172,6 +172,9 @@ Scripts details: RX/TX MQTT from Pskreporter /FT8 my decodes + Maps
 
 <img width="936" height="642" alt="prefs" src="https://github.com/user-attachments/assets/2eef359b-2ecf-4287-8653-f72e73c6e5d1" />
 
+<img width="1910" height="998" alt="jtdx_in_action" src="https://github.com/user-attachments/assets/af8a255d-5a3c-4d8b-9365-065d9c3cd3aa" />
+
+
 
 
 
